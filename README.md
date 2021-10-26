@@ -532,5 +532,3 @@ $table = new Table(
 
 - [Tobias Strub](https://www.tobento.ch)
 - [All Contributors](../../contributors)
-
-Some idea and code snippets is taken from [Jasongrimes php-paginator](https://github.com/jasongrimes/php-paginator).
