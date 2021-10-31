@@ -57,22 +57,7 @@ class Table implements TableInterface, Stringable
      * @return static
      */
     public function withColumns(array $columns): static
-    {
-        /*
-        $new = clone $this;
-        $new->columns = $columns;
-        $new->rows = [];
-        $new->rowsIndex = 0;
-        $new->lastRow = null;
-        
-        $new->rows($this->getRows(), function(Row $row, Row $oldRow): void {
-            $row->id($oldRow->getId());
-            $row->heading($oldRow->isHeading());
-            //if ($oldRow->isHtml('column')) {}
-            //$row->html($oldRow->isHtml());
-            $row->columns($oldRow->getColumns());
-        });*/
- 
+    { 
         $new = clone $this;
         $new->columns = $columns;
         $new->rows = [];
