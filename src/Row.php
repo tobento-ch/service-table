@@ -123,10 +123,13 @@ class Row implements RowInterface
      *
      * @param string $column
      * @return static $this
-     */    
-    public function html(string $column): static
+     */
+    public function html(string ...$column): static
     {
-        $this->htmlColumns[] = $column;
+        foreach($column as $name) {
+            $this->htmlColumns[] = $name;
+        }
+
         return $this;
     }
     
