@@ -432,6 +432,21 @@ class TableTest extends TestCase
         $this->assertFalse($row->isHtml('sku'));
     }
     
+    public function testRowMethodHtmlMulitple()
+    {
+        $table = new Table('products');
+
+        $row = $table->row([
+            'id' => 'Id',
+            'sku' => 'Sku',
+            'desc' => '<p>Description</p>',
+        ])->html('sku', 'desc');
+        
+        $this->assertFalse($row->isHtml('id'));
+        $this->assertTrue($row->isHtml('sku'));
+        $this->assertTrue($row->isHtml('desc'));
+    }
+    
     public function testRowMethodPrependHtml()
     {
         $table = new Table('products');
