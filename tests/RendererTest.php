@@ -40,7 +40,7 @@ class RendererTest extends TestCase
         $this->assertSame(
             '',
             $renderer->render($table)
-        );        
+        );
     }
     
     public function testRendersRowColumns()
@@ -56,7 +56,39 @@ class RendererTest extends TestCase
         $this->assertSame(
             '<div class="table"><div class="table-row"><div class="table-col grow-1">shirt</div><div class="table-col grow-1">Shirt</div></div></div>',
             $renderer->render($table)
-        );        
+        );
+    }
+    
+    public function testRendersTableAttributes()
+    {
+        $renderer = new Renderer();
+        $table = new Table('products');
+        $table->attributes(['data-foo' => 'value', 'class' => 'bar']);
+
+        $table->row([
+            'sku' => 'shirt',
+            'title' => 'Shirt',
+        ]);
+        
+        $this->assertSame(
+            '<div data-foo="value" class="bar table"><div class="table-row"><div class="table-col grow-1">shirt</div><div class="table-col grow-1">Shirt</div></div></div>',
+            $renderer->render($table)
+        );
+    }    
+    
+    public function testRendersRowColumnsAttributes()
+    {
+        $renderer = new Renderer();
+        $table = new Table('products');
+
+        $table->row()
+              ->column(key: 'sku', text: 'Sku')
+              ->column(key: 'title', text: 'Title', attributes: ['data-foo' => 'Foo', 'class' => 'bar']);
+        
+        $this->assertSame(
+            '<div class="table"><div class="table-row"><div class="table-col grow-1">Sku</div><div data-foo="Foo" class="bar table-col grow-1">Title</div></div></div>',
+            $renderer->render($table)
+        );
     }
     
     public function testRendersRows()
@@ -70,12 +102,12 @@ class RendererTest extends TestCase
         
         $table->row([
             'sku' => 'cap',
-        ]);        
+        ]);
         
         $this->assertSame(
             '<div class="table"><div class="table-row"><div class="table-col grow-1">shirt</div></div><div class="table-row"><div class="table-col grow-1">cap</div></div></div>',
             $renderer->render($table)
-        );        
+        );
     }
     
     public function testRendersHeading()
@@ -85,12 +117,12 @@ class RendererTest extends TestCase
 
         $table->row([
             'sku' => 'shirt',
-        ])->heading();   
+        ])->heading();
         
         $this->assertSame(
             '<div class="table"><div class="table-row th"><div class="table-col grow-1">shirt</div></div></div>',
             $renderer->render($table)
-        );        
+        );
     }
     
     public function testRendersPrependedAndAppendedHtml()
@@ -105,7 +137,7 @@ class RendererTest extends TestCase
         $this->assertSame(
             '<div class="table"><div class="table-row"><form><div class="table-col grow-1">shirt</div></form></div></div>',
             $renderer->render($table)
-        );        
+        );
     }
     
     public function testRendersWithoutEscapingHtmlIfIsHtml()
@@ -116,11 +148,30 @@ class RendererTest extends TestCase
         $table->row([
             'intro' => '<p>intro</p>',
             'desc' => '<p>desc</p>',
-        ])->html('desc');   
+        ])->html('desc');
         
         $this->assertSame(
             '<div class="table"><div class="table-row"><div class="table-col grow-1">&lt;p&gt;intro&lt;/p&gt;</div><div class="table-col grow-1"><p>desc</p></div></div></div>',
             $renderer->render($table)
         );        
-    }    
+    }
+    
+    public function testRendersRowsAttributes()
+    {
+        $renderer = new Renderer();
+        $table = new Table('products');
+
+        $table->row([
+            'sku' => 'shirt',
+        ])->attributes(['data-id' => 'foo']);
+        
+        $table->row([
+            'sku' => 'cap',
+        ]);
+        
+        $this->assertSame(
+            '<div class="table"><div data-id="foo" class="table-row"><div class="table-col grow-1">shirt</div></div><div class="table-row"><div class="table-col grow-1">cap</div></div></div>',
+            $renderer->render($table)
+        );
+    }
 }
