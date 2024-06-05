@@ -19,21 +19,26 @@ use Stringable;
  * Table
  */
 class Table implements TableInterface, Stringable
-{    
+{
     /**
      * @var array<mixed, RowInterface>
-     */    
+     */
     protected array $rows = [];
     
     /**
      * @var int The rows index.
-     */    
+     */
     protected int $rowsIndex = 0;
     
     /**
      * @var null|RowInterface
-     */    
+     */
     protected null|RowInterface $lastRow = null;
+    
+    /**
+     * @var array
+     */
+    protected array $attributes = [];
     
     /**
      * Create a new Table
@@ -57,14 +62,12 @@ class Table implements TableInterface, Stringable
      * @return static
      */
     public function withColumns(array $columns): static
-    { 
+    {
         $new = clone $this;
         $new->columns = $columns;
         $new->rows = [];
         $new->rowsIndex = $this->rowsIndex+1;
         $new->lastRow = null;
-        
-        //print_r($this->getRows());
         
         foreach($this->getRows() as $row) {
             $new->addRow($row->withActiveColumns($columns));
@@ -78,13 +81,13 @@ class Table implements TableInterface, Stringable
      *
      * @param RendererInterface $renderer
      * @return static
-     */    
+     */
     public function withRenderer(RendererInterface $renderer): static
     {
         $new = clone $this;
         $new->renderer = $renderer;
         return $new;
-    }    
+    }
     
     /**
      * Add a row and returns the row added.
@@ -99,7 +102,6 @@ class Table implements TableInterface, Stringable
         null|callable $callback = null,
         null|string|int $id = null
     ): Row {
-        
         $this->addLastRow();
         
         return $this->lastRow = new Row(
@@ -119,14 +121,13 @@ class Table implements TableInterface, Stringable
      * @return static $this
      */
     public function rows(iterable $items, null|callable $callback = null): static
-    {        
-        foreach($items as $columns)
-        {
+    {
+        foreach($items as $columns) {
             $this->row($columns, $callback, $this->getNextRowsIndex());
         }
         
         return $this;
-    }    
+    }
     
     /**
      * Add a row.
@@ -169,6 +170,28 @@ class Table implements TableInterface, Stringable
         
         return $this->rows;
     }
+    
+    /**
+     * Set the attributes.
+     *
+     * @param array $attributes
+     * @return static $this
+     */
+    public function attributes(array $attributes): static
+    {
+        $this->attributes = $attributes;
+        return $this;
+    }
+    
+    /**
+     * Returns the attributes.
+     *
+     * @return array
+     */
+    public function getAttributes(): array
+    {
+        return $this->attributes;
+    }
 
     /**
      * Get the table name
@@ -178,13 +201,13 @@ class Table implements TableInterface, Stringable
     public function name(): string
     {
         return $this->name;
-    }    
+    }
 
     /**
      * Get the evaluated contents of the table.
      *
      * @return string
-     */    
+     */
     public function render(): string
     {
         return $this->renderer ? $this->renderer->render($this) : '';
@@ -221,5 +244,5 @@ class Table implements TableInterface, Stringable
     protected function getNextRowsIndex(): int
     {
         return $this->rowsIndex++;
-    }    
+    }
 }

@@ -31,7 +31,7 @@ interface TableInterface
      *
      * @param RendererInterface $renderer
      * @return static
-     */    
+     */
     public function withRenderer(RendererInterface $renderer): static;
     
     /**
@@ -55,7 +55,7 @@ interface TableInterface
      * @param null|callable $callback
      * @return static $this
      */
-    public function rows(iterable $items, null|callable $callback = null): static;    
+    public function rows(iterable $items, null|callable $callback = null): static;
     
     /**
      * Add a row.
@@ -81,6 +81,21 @@ interface TableInterface
     public function getRows(): array;
 
     /**
+     * Set the attributes.
+     *
+     * @param array $attributes
+     * @return static $this
+     */
+    public function attributes(array $attributes): static;
+    
+    /**
+     * Returns the attributes.
+     *
+     * @return array
+     */
+    public function getAttributes(): array;
+    
+    /**
      * Get the table name
      *
      * @return string
@@ -91,6 +106,6 @@ interface TableInterface
      * Get the evaluated contents of the table.
      *
      * @return string
-     */    
+     */
     public function render(): string;
 }
