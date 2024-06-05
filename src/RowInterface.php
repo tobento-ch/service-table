@@ -31,14 +31,14 @@ interface RowInterface
      *
      * @param string|int $id
      * @return static $this
-     */    
+     */
     public function id(string|int $id): static;
     
     /**
      * Returns the id.
      *
      * @return null|string|int
-     */    
+     */
     public function getId(): null|string|int;
 
     /**
@@ -46,14 +46,14 @@ interface RowInterface
      *
      * @param string|int $id
      * @return static $this
-     */    
+     */
     public function heading(bool $isHeading = true): static;
     
     /**
      * Returns true if it is a heading, otherwise false.
      *
      * @return bool
-     */    
+     */
     public function isHeading(): bool;
     
     /**
@@ -61,27 +61,34 @@ interface RowInterface
      *
      * @param string $column
      * @return bool
-     */    
+     */
     public function isHtml(string $column): bool;
     
     /**
      * Returns the html to prepend or null if none.
      *
      * @return null|string
-     */    
+     */
     public function prependedHtml(): null|string;
     
     /**
      * Returns the html to append or null if none.
      *
      * @return null|string
-     */    
+     */
     public function appendedHtml(): null|string;
+    
+    /**
+     * Returns the row attributes.
+     *
+     * @return array
+     */
+    public function getAttributes(): array;
     
     /**
      * Get the row columns.
      *
      * @return array<string, ColumnInterface>
-     */    
+     */
     public function getColumns(): array;
 }

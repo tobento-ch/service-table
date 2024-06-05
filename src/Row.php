@@ -22,23 +22,28 @@ class Row implements RowInterface
 {
     /**
      * @var array<string, ColumnInterface>
-     */    
+     */
     protected array $columns = [];
     
     /**
      * @var array<int, string>
-     */    
+     */
     protected array $htmlColumns = [];
     
     /**
      * @var null|string
-     */    
+     */
     protected null|string $prependHtml = null;
     
     /**
      * @var null|string
-     */    
-    protected null|string $appendHtml = null;    
+     */
+    protected null|string $appendHtml = null;
+    
+    /**
+     * @var array
+     */
+    protected array $attributes = [];
     
     /**
      * Create a new Row
@@ -79,7 +84,7 @@ class Row implements RowInterface
      *
      * @param string|int $id
      * @return static $this
-     */    
+     */
     public function id(string|int $id): static
     {
         $this->id = $id;
@@ -90,7 +95,7 @@ class Row implements RowInterface
      * Returns the id.
      *
      * @return null|string|int
-     */    
+     */
     public function getId(): null|string|int
     {
         return $this->id;
@@ -101,7 +106,7 @@ class Row implements RowInterface
      *
      * @param string|int $id
      * @return static $this
-     */    
+     */
     public function heading(bool $isHeading = true): static
     {
         $this->isHeading = $isHeading;
@@ -112,7 +117,7 @@ class Row implements RowInterface
      * Returns true if it is a heading, otherwise false.
      *
      * @return bool
-     */    
+     */
     public function isHeading(): bool
     {
         return $this->isHeading;
@@ -138,7 +143,7 @@ class Row implements RowInterface
      *
      * @param string $column
      * @return bool
-     */    
+     */
     public function isHtml(string $column): bool
     {
         return in_array($column, $this->htmlColumns);
@@ -149,7 +154,7 @@ class Row implements RowInterface
      *
      * @param string $html
      * @return static $this
-     */    
+     */
     public function prependHtml(string $html): static
     {
         $this->prependHtml = $html;
@@ -160,18 +165,18 @@ class Row implements RowInterface
      * Returns the html to prepend or null if none.
      *
      * @return null|string
-     */    
+     */
     public function prependedHtml(): null|string
     {
         return $this->prependHtml;
-    }    
+    }
     
     /**
      * Set the html to append.
      *
      * @param string $html
      * @return static $this
-     */    
+     */
     public function appendHtml(string $html): static
     {
         $this->appendHtml = $html;
@@ -182,11 +187,33 @@ class Row implements RowInterface
      * Returns the html to append or null if none.
      *
      * @return null|string
-     */    
+     */
     public function appendedHtml(): null|string
     {
         return $this->appendHtml;
-    }    
+    }
+    
+    /**
+     * Set the attributes.
+     *
+     * @param array $attributes
+     * @return static $this
+     */
+    public function attributes(array $attributes): static
+    {
+        $this->attributes = $attributes;
+        return $this;
+    }
+    
+    /**
+     * Returns the row attributes.
+     *
+     * @return array
+     */
+    public function getAttributes(): array
+    {
+        return $this->attributes;
+    }
 
     /**
      * Execute a callback over each item.
@@ -194,11 +221,10 @@ class Row implements RowInterface
      * @param iterable $items
      * @param callable $callback
      * @return static $this
-     */    
+     */
     public function each(iterable $items, callable $callback): static
     {
-        foreach($items as $key => $item)
-        {
+        foreach($items as $key => $item) {
             call_user_func_array($callback, [$this, $item, $key]);
         }
         
@@ -211,7 +237,7 @@ class Row implements RowInterface
      * @param bool $value
      * @param callable $callback
      * @return static $this
-     */    
+     */
     public function when(bool $value, callable $callback): static
     {
         if ($value) {
@@ -219,7 +245,7 @@ class Row implements RowInterface
         }
         
         return $this;
-    }    
+    }
     
     /**
      * Add columns.
@@ -227,19 +253,16 @@ class Row implements RowInterface
      * @param array<mixed>|object $columns
      * @param null|callable $callback
      * @return static $this
-     */    
+     */
     public function columns(array|object $columns, null|callable $callback = null): static
     {
-        if (!is_null($callback))
-        {
+        if (!is_null($callback)) {
             call_user_func_array($callback, [$this, $columns]);
             return $this;
         }
         
-        if (is_array($columns))
-        {
-            foreach($columns as $key => $text)
-            {
+        if (is_array($columns)) {
+            foreach($columns as $key => $text) {
                 if ($text instanceof ColumnInterface) {
                     $this->column($this->ensureString($key), $text->text());
                 } else {
@@ -256,15 +279,16 @@ class Row implements RowInterface
      *
      * @param string $key
      * @param string|Stringable $text
+     * @param array $attributes
      * @return static $this
-     */    
-    public function column(string $key, string|Stringable $text): static
+     */
+    public function column(string $key, string|Stringable $text, array $attributes = []): static
     {
         if (
             empty($this->activeColumns)
             || in_array($key, $this->activeColumns)
         ) {
-            $this->columns[$key] = new Column($key, $text);
+            $this->columns[$key] = new Column($key, $text, $attributes);
         }
         
         return $this;
@@ -274,7 +298,7 @@ class Row implements RowInterface
      * Get the row columns.
      *
      * @return array<string, ColumnInterface>
-     */    
+     */
     public function getColumns(): array
     {
         return $this->columns;
@@ -285,7 +309,7 @@ class Row implements RowInterface
      *
      * @param mixed $value
      * @return string
-     */    
+     */
     protected function ensureString(mixed $value): string
     {        
         if (is_scalar($value)) {
@@ -297,5 +321,5 @@ class Row implements RowInterface
         }        
         
         return '';
-    }    
+    }
 }
