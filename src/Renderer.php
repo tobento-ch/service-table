@@ -13,16 +13,18 @@ declare(strict_types=1);
 
 namespace Tobento\Service\Table;
 
+use Tobento\Service\Tag\Attributes;
+use Tobento\Service\Tag\Str;
 use Stringable;
 
 /**
- * Renderer
+ * Renders a table with DIV tags.
  */
 class Renderer implements RendererInterface
 {
     /**
      * @var null|array<string, int>
-     */    
+     */
     protected null|array $sizes = null;
     
     /**
@@ -36,34 +38,43 @@ class Renderer implements RendererInterface
         if (empty($table->getRows())) {
             return '';
         }
-            
-        $html = '<div class="table">';
         
-        foreach($table->getRows() as $row)
-        {
+        $attributes = new Attributes($table->getAttributes());
+        $attributes->add('class', 'table');
+        $html = '<div'.$attributes.'>';
+        
+        foreach($table->getRows() as $row) {
             if (empty($row->getColumns())) {
                 continue;
             }
-                        
+            
+            $attributes = new Attributes($row->getAttributes());
+            $attributes->add('class', 'table-row');
+            
             if ($row->isHeading()) {
-                $html .= '<div class="table-row th">';
-            } else {
-                $html .= '<div class="table-row">';
+                $attributes->add('class', 'th');
             }
+            
+            $html .= '<div'.$attributes.'>';
             
             if ($row->prependedHtml()) {
                 $html .= $row->prependedHtml();
             }
             
-            foreach($row->getColumns() as $column)
-            {
+            foreach($row->getColumns() as $column) {
                 $text = $row->isHtml($column->key())
                     ? $column->text()
                     : Str::esc($column->text());
                 
                 $size = $this->getColumnSize($table->getRows(), $column->key());
                 
-                $html .= '<div class="table-col grow-'.Str::esc((string)$size).'">'.$text.'</div>';
+                if (empty($column->attributes())) {
+                    $html .= '<div class="table-col grow-'.Str::esc((string)$size).'">'.$text.'</div>';
+                } else {
+                    $attributes = new Attributes($column->attributes());
+                    $attributes->add('class', 'table-col grow-'.Str::esc((string)$size));
+                    $html .= '<div'.$attributes.'>'.$text.'</div>';
+                }
             }
             
             if ($row->appendedHtml()) {
@@ -95,10 +106,8 @@ class Renderer implements RendererInterface
         
         $sizes = [];
         
-        foreach($rows as $row)
-        {
-            foreach($row->getColumns() as $col)
-            {
+        foreach($rows as $row) {
+            foreach($row->getColumns() as $col) {
                 $sizes[$col->key()][] = strlen(strip_tags($col->text()));
             }
         }
