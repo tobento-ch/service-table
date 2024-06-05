@@ -389,6 +389,21 @@ class TableTest extends TestCase
         );
     }
     
+    public function testRowMethodColumn()
+    {
+        $table = new Table('products');
+
+        $table->row()
+              ->column(key: 'sku', text: 'Sku')
+              ->column(key: 'title', text: 'Title', attributes: ['data-foo' => 'Foo']);
+        
+        $this->assertSame(['sku', 'title'], array_keys($table->getRow(0)->getColumns()));
+        $this->assertSame('sku', $table->getRow(0)->getColumns()['sku']->key());
+        $this->assertSame('Sku', $table->getRow(0)->getColumns()['sku']->text());
+        $this->assertSame([], $table->getRow(0)->getColumns()['sku']->attributes());
+        $this->assertSame(['data-foo' => 'Foo'], $table->getRow(0)->getColumns()['title']->attributes());
+    }
+    
     public function testRowMethodWhenIsTrue()
     {
         $table = new Table('products');
@@ -474,6 +489,21 @@ class TableTest extends TestCase
         $this->assertSame(
             '</form>',
             $row->appendedHtml()
+        );
+    }
+    
+    public function testRowMethodAttributes()
+    {
+        $table = new Table('products');
+
+        $row = $table->row([
+            'sku' => 'Sku',
+            'desc' => 'Description',
+        ])->attributes(['data-id' => 'foo']);
+        
+        $this->assertSame(
+            ['data-id' => 'foo'],
+            $row->getAttributes()
         );
     }
     

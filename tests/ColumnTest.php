@@ -44,5 +44,13 @@ class ColumnTest extends TestCase
             'SKU',
             (new Column('sku', 'SKU'))->text()
         );
-    }    
+    }
+    
+    public function testAttributesMethod()
+    {
+        $this->assertSame(
+            ['name' => 'value'],
+            (new Column('sku', 'SKU', ['name' => 'value']))->attributes()
+        );
+    }
 }
