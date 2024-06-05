@@ -25,10 +25,12 @@ class Column implements ColumnInterface
      *
      * @param string $key
      * @param string|Stringable $text
+     * @param array $attributes
      */
     public function __construct(
         protected string $key,
         protected string|Stringable $text,
+        protected array $attributes = [],
     ) {
         if ($text instanceof Stringable) {
             $this->text = $text->__toString();
@@ -39,7 +41,7 @@ class Column implements ColumnInterface
      * Get the key.
      *
      * @return string
-     */    
+     */
     public function key(): string
     {
         return $this->key;
@@ -49,7 +51,7 @@ class Column implements ColumnInterface
      * Get the text.
      *
      * @return string
-     */    
+     */
     public function text(): string
     {
         if ($this->text instanceof Stringable) {
@@ -57,5 +59,15 @@ class Column implements ColumnInterface
         }
         
         return $this->text;
+    }
+    
+    /**
+     * Returns the attributes.
+     *
+     * @return array
+     */
+    public function attributes(): array
+    {
+        return $this->attributes;
     }
 }

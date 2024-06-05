@@ -22,13 +22,20 @@ interface ColumnInterface
      * Get the key.
      *
      * @return string
-     */    
+     */
     public function key(): string;
     
     /**
      * Get the text.
      *
      * @return string
-     */    
+     */
     public function text(): string;
+    
+    /**
+     * Returns the attributes.
+     *
+     * @return array
+     */
+    public function attributes(): array;
 }
