@@ -15,8 +15,10 @@ The Table Service provides a way for building tables easily.
     - [Create Row](#create-row)
     - [Row Methods](#row-methods)
     - [Custom Row](#custom-row)
+    - [Table Attributes](#table-attributes)
     - [Render Table](#render-table)
         - [Default Renderer](#default-renderer)
+        - [Table Renderer](#table-renderer)
         - [Custom Renderer](#custom-renderer)
 - [Credits](#credits)
 ___
@@ -205,7 +207,7 @@ $table->rows([
     new Product('Cap', 11.99),  
 ], function(Row $row, Product $product): void {
     $row->column(key: 'title', text: $product->title());
-    $row->column(key: 'price', text: $product->price());
+    $row->column(key: 'price', text: $product->price(), attributes: ['data-foo' => 'value']);
 });
 ```
 
@@ -229,7 +231,7 @@ $table->rows([
     ],
 ], function(Row $row, array $item): void {
     $row->column(key: 'title', text: $item['title']);
-    $row->column(key: 'price', text: $item['price']);
+    $row->column(key: 'price', text: $item['price'], attributes: ['data-foo' => 'value']);
 });
 ```
 
@@ -282,7 +284,7 @@ $table->row(
     new Product('Shirt', 19.99),
     function(Row $row, Product $product): void {
         $row->column(key: 'title', text: $product->title())
-            ->column(key: 'price', text: $product->price());
+            ->column(key: 'price', text: $product->price(), attributes: ['data-foo' => 'value']);
     }
 );
 ```
@@ -340,7 +342,7 @@ $table = new Table('products');
 
 $table->row()
       ->each($item, function(Row $row, $value, $key): void {
-            $row->column($key, $value);      
+            $row->column(key: $key, value: $value);
       });
 ```
 
@@ -395,6 +397,20 @@ $table->row([
   ->appendHtml('</form>');
 ```
 
+**Column**
+
+You may use the column method to add a column.
+
+```php
+use Tobento\Service\Table\Table;
+
+$table = new Table('products');
+
+$table->row()
+      ->column(key: 'sku', text: 'Sku')
+      ->column(key: 'title', text: 'Title', attributes: ['data-foo' => 'Foo']);
+```
+
 ## Custom Row
 
 You may use the addRow method to pass a custom row.
@@ -411,13 +427,27 @@ $customRow = new CustomRow();
 $table->addRow($customRow);
 ```
 
+### Table Attributes
+
+You may set table attributes which will be rendered depending on the renderer.
+
+```php
+use Tobento\Service\Table\Table;
+
+$table = new Table('products');
+$table->attributes(['data-foo' => 'value']);
+
+$attributes = $table->getAttributes();
+// ['data-foo' => 'value']
+```
+
 ### Render Table
 
 There are different ways of rendering the table depending on your needs.
 
 #### Default Renderer
 
-The default renderer generates the table with DIV tags and calculates the columns size automatically.
+The default renderer generates the table using ```<div>``` elements and calculates the columns size automatically.
 
 ```php
 use Tobento\Service\Table\Table;
@@ -427,6 +457,8 @@ $table = new Table(
     name: 'products',
     renderer: new Renderer(),
 );
+
+$table->attributes(['data-id' => 'value']);
 
 $table->row([
     'sku' => 'Sku',
@@ -440,7 +472,7 @@ $table->row([
     'title' => 'Shirt',
     'description' => 'A nice shirt in blue color.',
     'price' => 19.99,
-]);
+])->attributes(['data-row' => 'name']);
 
 echo $table;
 ```
@@ -448,14 +480,14 @@ echo $table;
 Outputs:
 
 ```html
-<div class="table">
+<div class="table" data-id="value">
     <div class="table-row th">
         <div class="table-col grow-1">Sku</div>
         <div class="table-col grow-1">Title</div>
         <div class="table-col grow-2">Description</div>
         <div class="table-col grow-1">Price</div>
     </div>
-    <div class="table-row">
+    <div class="table-row" data-row="name">
         <div class="table-col grow-1">shirt</div>
         <div class="table-col grow-1">Shirt</div>
         <div class="table-col grow-2">A nice shirt in blue color.</div>
@@ -464,68 +496,82 @@ Outputs:
 </div>
 ```
 
+#### Table Renderer
+
+The table renderer generates the table using the ```<table>``` HTML element.
+
+```php
+use Tobento\Service\Table\Table;
+use Tobento\Service\Table\TableRenderer;
+
+$table = new Table(
+    name: 'products',
+    renderer: new TableRenderer(),
+);
+
+$table->attributes(['data-id' => 'value']);
+
+$table->row([
+    'sku' => 'Sku',
+    'title' => 'Title',
+    'description' => 'Description',
+    'price' => 'Price',
+])->heading();
+
+$table->row([
+    'sku' => 'shirt',
+    'title' => 'Shirt',
+    'description' => 'A nice shirt in blue color.',
+    'price' => 19.99,
+])->attributes(['data-row' => 'name']);
+
+echo $table;
+```
+
+Outputs:
+
+```html
+<table data-id="value">
+    <tr>
+        <th>Sku</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Price</th>
+    </tr>
+    <tr data-row="name">
+        <td>shirt</td>
+        <td>Shirt</td>
+        <td>A nice shirt in blue color.</td>
+        <td>19.99</td>
+    </tr>
+</table>
+```
+
+The ```$table->row()->prependHtml()``` and ```$table->row()->appendHtml``` methods will be ignored as it would produce invalid HTML!
+
 #### Custom Renderer
 
 You might write your own renderer fitting your application.
 
 ```php
-use Tobento\Service\Table\Table;
-use Tobento\Service\Table\TableInterface;
 use Tobento\Service\Table\RendererInterface;
-use Tobento\Service\Table\Str;
+use Tobento\Service\Table\TableInterface;
 
 class CustomRenderer implements RendererInterface
 {
+    /**
+     * Render the table.
+     *
+     * @param TableInterface $table
+     * @return string
+     */
     public function render(TableInterface $table): string
     {
-        if (empty($table->getRows())) {
-            return '';
-        }
-            
-        $html = '<table>';
+        // create the your custom table ...
         
-        foreach($table->getRows() as $row)
-        {
-            if (empty($row->getColumns())) {
-                continue;
-            }
-            
-            $html .= '<tr>';
-            
-            if ($row->prependedHtml()) {
-                $html .= $row->prependedHtml();
-            }
-            
-            foreach($row->getColumns() as $column)
-            {
-                $text = $row->isHtml($column->key())
-                    ? $column->text()
-                    : Str::esc($column->text());
-                
-                if ($row->isHeading()) {
-                    $html .= '<th>'.$text.'</th>';
-                } else {
-                    $html .= '<td>'.$text.'</td>';
-                }
-            }
-            
-            if ($row->appendedHtml()) {
-                $html .= $row->appendedHtml();
-            }
-            
-            $html .= '</tr>';
-        }
-        
-        $html .= '</table>';
-        
-        return $html;
-    }   
+        return 'table';
+    }
 }
-
-$table = new Table(
-    name: 'products',
-    renderer: new CustomRenderer(),
-);
 ```
 
 # Credits
