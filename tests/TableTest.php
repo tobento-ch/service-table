@@ -555,7 +555,7 @@ class TableTest extends TestCase
         ]);
             
         $this->assertSame(
-            '<div class="table"><div class="table-row"><div class="table-col grow-1">shirt</div></div></div>',
+            '<div class="table" role="table"><div class="table-row" role="row"><div class="table-col grow-1" role="cell">shirt</div></div></div>',
             $table->render()
         );       
     }
