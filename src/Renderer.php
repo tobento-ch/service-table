@@ -116,7 +116,9 @@ class Renderer implements RendererInterface
         
         foreach($rows as $row) {
             foreach($row->getColumns() as $col) {
-                $sizes[$col->key()][] = strlen(strip_tags($col->text()));
+                if (!str_contains($col->text(), '<option')) {
+                    $sizes[$col->key()][] = strlen(strip_tags($col->text()));
+                }
             }
         }
         
