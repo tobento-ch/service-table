@@ -104,7 +104,7 @@ class Row implements RowInterface
     /**
      * Set the if it is a heading row.
      *
-     * @param string|int $id
+     * @param bool $isHeading
      * @return static $this
      */
     public function heading(bool $isHeading = true): static
