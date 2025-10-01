@@ -42,7 +42,7 @@ class Renderer implements RendererInterface
         $attributes = new Attributes($table->getAttributes());
         $attributes->add('class', 'table');
         $attributes->add('role', 'table');
-        $html = '<div'.$attributes.'>';
+        $html = '<div'.(string)$attributes.'>';
         
         foreach($table->getRows() as $row) {
             if (empty($row->getColumns())) {
@@ -57,7 +57,7 @@ class Renderer implements RendererInterface
                 $attributes->add('class', 'th');
             }
             
-            $html .= '<div'.$attributes.'>';
+            $html .= '<div'.(string)$attributes.'>';
             
             if ($row->prependedHtml()) {
                 $html .= $row->prependedHtml();
@@ -81,7 +81,7 @@ class Renderer implements RendererInterface
                     $attributes = new Attributes($column->attributes());
                     $attributes->add('class', 'table-col grow-'.Str::esc((string)$size));
                     $attributes->set('role', $role);
-                    $html .= '<div'.$attributes.'>'.$text.'</div>';
+                    $html .= '<div'.(string)$attributes.'>'.$text.'</div>';
                 }
             }
             

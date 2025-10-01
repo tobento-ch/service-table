@@ -35,7 +35,7 @@ class TableRenderer implements RendererInterface
         }
         
         $attributes = new Attributes($table->getAttributes());
-        $html = '<table'.$attributes.'>';
+        $html = '<table'.(string)$attributes.'>';
         
         foreach($table->getRows() as $row) {
             if (empty($row->getColumns())) {
@@ -44,7 +44,7 @@ class TableRenderer implements RendererInterface
             
             $attributes = new Attributes($row->getAttributes());
             
-            $html .= '<tr'.$attributes.'>';
+            $html .= '<tr'.(string)$attributes.'>';
             
             // would produce invalid html!
             /*if ($row->prependedHtml()) {
